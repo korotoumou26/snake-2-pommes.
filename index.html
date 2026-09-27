@@ -159,9 +159,8 @@
             ctx.fillStyle = "#020617";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Dessin des 2 POMMES (rouges avec une petite tige)
+            // Dessin des 2 POMMES
             for (let apple of apples) {
-                // Pomme rouge
                 ctx.fillStyle = "#ef4444";
                 ctx.beginPath();
                 ctx.arc(
@@ -173,7 +172,6 @@
                 );
                 ctx.fill();
 
-                // Petite tige brune
                 ctx.fillStyle = "#78350f";
                 ctx.fillRect(apple.x * gridSize + gridSize / 2 - 1, apple.y * gridSize + 2, 2, 4);
             }
@@ -185,29 +183,25 @@
                 let y = segment.y * gridSize;
 
                 if (i === 0) {
-                    // --- TÊTE DU SERPENT ---
-                    ctx.fillStyle = "#15803d"; // Vert plus foncé pour la tête
+                    ctx.fillStyle = "#15803d";
                     ctx.beginPath();
                     ctx.arc(x + gridSize / 2, y + gridSize / 2, gridSize / 2, 0, Math.PI * 2);
                     ctx.fill();
 
-                    // Yeux du serpent
-                    ctx.fillStyle = "#ffffff"; // Blanc des yeux
+                    ctx.fillStyle = "#ffffff";
                     let eyeOffset1 = { x: 5, y: 5 };
                     let eyeOffset2 = { x: 15, y: 5 };
 
-                    if (dx === 1)  { eyeOffset1 = { x: 14, y: 5 };  eyeOffset2 = { x: 14, y: 15 }; } // Regard Droite
-                    if (dx === -1) { eyeOffset1 = { x: 5, y: 5 };   eyeOffset2 = { x: 5, y: 15 }; }  // Regard Gauche
-                    if (dy === 1)  { eyeOffset1 = { x: 5, y: 14 };  eyeOffset2 = { x: 15, y: 14 }; } // Regard Bas
-                    if (dy === -1) { eyeOffset1 = { x: 5, y: 5 };   eyeOffset2 = { x: 15, y: 5 }; }  // Regard Haut
+                    if (dx === 1)  { eyeOffset1 = { x: 14, y: 5 };  eyeOffset2 = { x: 14, y: 15 }; }
+                    if (dx === -1) { eyeOffset1 = { x: 5, y: 5 };   eyeOffset2 = { x: 5, y: 15 }; }
+                    if (dy === 1)  { eyeOffset1 = { x: 5, y: 14 };  eyeOffset2 = { x: 15, y: 14 }; }
+                    if (dy === -1) { eyeOffset1 = { x: 5, y: 5 };   eyeOffset2 = { x: 15, y: 5 }; }
 
-                    // Dessin des 2 globes oculaires
                     ctx.beginPath();
                     ctx.arc(x + eyeOffset1.x, y + eyeOffset1.y, 3, 0, Math.PI * 2);
                     ctx.arc(x + eyeOffset2.x, y + eyeOffset2.y, 3, 0, Math.PI * 2);
                     ctx.fill();
 
-                    // Pupilles noires
                     ctx.fillStyle = "#000000";
                     ctx.beginPath();
                     ctx.arc(x + eyeOffset1.x, y + eyeOffset1.y, 1.5, 0, Math.PI * 2);
@@ -215,11 +209,31 @@
                     ctx.fill();
 
                 } else {
-                    // --- CORPS DU SERPENT ---
-                    ctx.fillStyle = "#22c55e"; // Vert fluo pour le corps
+                    ctx.fillStyle = "#22c55e";
                     ctx.beginPath();
                     ctx.arc(x + gridSize / 2, y + gridSize / 2, gridSize / 2 - 1, 0, Math.PI * 2);
                     ctx.fill();
                 }
             }
         }
+
+        function resetGame() {
+            score = 0;
+            document.getElementById("score").innerText = score;
+            snake = [{ x: 10, y: 10 }];
+            dx = 1;
+            dy = 0;
+            initApples();
+        }
+
+        initApples();
+        setInterval(gameLoop, 120);
+    </script>
+</body>
+</html>
+
+       
+
+       
+      
+     
