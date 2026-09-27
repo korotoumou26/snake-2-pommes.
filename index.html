@@ -155,12 +155,14 @@
         }
 
         function drawGame() {
+            // Fond du plateau
             ctx.fillStyle = "#020617";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Dessin des 2 pommes rouges
-            ctx.fillStyle = "#ef4444";
+            // Dessin des 2 POMMES (rouges avec une petite tige)
             for (let apple of apples) {
+                // Pomme rouge
+                ctx.fillStyle = "#ef4444";
                 ctx.beginPath();
                 ctx.arc(
                     apple.x * gridSize + gridSize / 2,
@@ -170,26 +172,54 @@
                     Math.PI * 2
                 );
                 ctx.fill();
+
+                // Petite tige brune
+                ctx.fillStyle = "#78350f";
+                ctx.fillRect(apple.x * gridSize + gridSize / 2 - 1, apple.y * gridSize + 2, 2, 4);
             }
 
-            // Dessin du serpent vert
-            ctx.fillStyle = "#22c55e";
-            for (let segment of snake) {
-                ctx.fillRect(segment.x * gridSize + 1, segment.y * gridSize + 1, gridSize - 2, gridSize - 2);
+            // Dessin du SERPENT
+            for (let i = 0; i < snake.length; i++) {
+                let segment = snake[i];
+                let x = segment.x * gridSize;
+                let y = segment.y * gridSize;
+
+                if (i === 0) {
+                    // --- TÊTE DU SERPENT ---
+                    ctx.fillStyle = "#15803d"; // Vert plus foncé pour la tête
+                    ctx.beginPath();
+                    ctx.arc(x + gridSize / 2, y + gridSize / 2, gridSize / 2, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Yeux du serpent
+                    ctx.fillStyle = "#ffffff"; // Blanc des yeux
+                    let eyeOffset1 = { x: 5, y: 5 };
+                    let eyeOffset2 = { x: 15, y: 5 };
+
+                    if (dx === 1)  { eyeOffset1 = { x: 14, y: 5 };  eyeOffset2 = { x: 14, y: 15 }; } // Regard Droite
+                    if (dx === -1) { eyeOffset1 = { x: 5, y: 5 };   eyeOffset2 = { x: 5, y: 15 }; }  // Regard Gauche
+                    if (dy === 1)  { eyeOffset1 = { x: 5, y: 14 };  eyeOffset2 = { x: 15, y: 14 }; } // Regard Bas
+                    if (dy === -1) { eyeOffset1 = { x: 5, y: 5 };   eyeOffset2 = { x: 15, y: 5 }; }  // Regard Haut
+
+                    // Dessin des 2 globes oculaires
+                    ctx.beginPath();
+                    ctx.arc(x + eyeOffset1.x, y + eyeOffset1.y, 3, 0, Math.PI * 2);
+                    ctx.arc(x + eyeOffset2.x, y + eyeOffset2.y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Pupilles noires
+                    ctx.fillStyle = "#000000";
+                    ctx.beginPath();
+                    ctx.arc(x + eyeOffset1.x, y + eyeOffset1.y, 1.5, 0, Math.PI * 2);
+                    ctx.arc(x + eyeOffset2.x, y + eyeOffset2.y, 1.5, 0, Math.PI * 2);
+                    ctx.fill();
+
+                } else {
+                    // --- CORPS DU SERPENT ---
+                    ctx.fillStyle = "#22c55e"; // Vert fluo pour le corps
+                    ctx.beginPath();
+                    ctx.arc(x + gridSize / 2, y + gridSize / 2, gridSize / 2 - 1, 0, Math.PI * 2);
+                    ctx.fill();
+                }
             }
         }
-
-        function resetGame() {
-            score = 0;
-            document.getElementById("score").innerText = score;
-            snake = [{ x: 10, y: 10 }];
-            dx = 1;
-            dy = 0;
-            initApples();
-        }
-
-        initApples();
-        setInterval(gameLoop, 120);
-    </script>
-</body>
-</html>
