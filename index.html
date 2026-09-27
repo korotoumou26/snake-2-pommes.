@@ -4,7 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snake — Édition 2 Pommes</title>
-    <link rel="stylesheet" href="./style.css">
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        h1 {
+            color: #22c55e;
+            margin-bottom: 10px;
+        }
+
+        .score-board {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        canvas {
+            background-color: #020617;
+            border: 3px solid #22c55e;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .instructions {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -15,6 +53,143 @@
         <canvas id="gameCanvas" width="400" height="400"></canvas>
         <p class="instructions">Utilisez les flèches du clavier pour vous déplacer.</p>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        const gridSize = 20;
+        const tileCount = canvas.width / gridSize;
+
+        let score = 0;
+        let snake = [{ x: 10, y: 10 }];
+        let dx = 1;
+        let dy = 0;
+        let apples = [];
+
+        function getRandomPosition() {
+            let newPos;
+            let collision;
+            do {
+                collision = false;
+                newPos = {
+                    x: Math.floor(Math.random() * tileCount),
+                    y: Math.floor(Math.random() * tileCount)
+                };
+
+                for (let segment of snake) {
+                    if (segment.x === newPos.x && segment.y === newPos.y) {
+                        collision = true;
+                        break;
+                    }
+                }
+
+                for (let apple of apples) {
+                    if (apple.x === newPos.x && apple.y === newPos.y) {
+                        collision = true;
+                        break;
+                    }
+                }
+            } while (collision);
+
+            return newPos;
+        }
+
+        function initApples() {
+            apples = [];
+            apples.push(getRandomPosition());
+            apples.push(getRandomPosition());
+        }
+
+        document.addEventListener("keydown", changeDirection);
+
+        function changeDirection(event) {
+            const keyPressed = event.key;
+            if ((keyPressed === "ArrowLeft" || keyPressed === "q") && dx === 0) {
+                dx = -1; dy = 0;
+            } else if ((keyPressed === "ArrowUp" || keyPressed === "z") && dy === 0) {
+                dx = 0; dy = -1;
+            } else if ((keyPressed === "ArrowRight" || keyPressed === "d") && dx === 0) {
+                dx = 1; dy = 0;
+            } else if ((keyPressed === "ArrowDown" || keyPressed === "s") && dy === 0) {
+                dx = 0; dy = 1;
+            }
+        }
+
+        function gameLoop() {
+            const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+
+            if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+                alert("Game Over ! Score final : " + score);
+                resetGame();
+                return;
+            }
+
+            for (let segment of snake) {
+                if (segment.x === head.x && segment.y === head.y) {
+                    alert("Game Over ! Score final : " + score);
+                    resetGame();
+                    return;
+                }
+            }
+
+            snake.unshift(head);
+
+            let ateAppleIndex = -1;
+            for (let i = 0; i < apples.length; i++) {
+                if (head.x === apples[i].x && head.y === apples[i].y) {
+                    ateAppleIndex = i;
+                    break;
+                }
+            }
+
+            if (ateAppleIndex !== -1) {
+                score += 10;
+                document.getElementById("score").innerText = score;
+                apples[ateAppleIndex] = getRandomPosition();
+            } else {
+                snake.pop();
+            }
+
+            drawGame();
+        }
+
+        function drawGame() {
+            ctx.fillStyle = "#020617";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Dessin des 2 pommes rouges
+            ctx.fillStyle = "#ef4444";
+            for (let apple of apples) {
+                ctx.beginPath();
+                ctx.arc(
+                    apple.x * gridSize + gridSize / 2,
+                    apple.y * gridSize + gridSize / 2,
+                    gridSize / 2 - 2,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.fill();
+            }
+
+            // Dessin du serpent vert
+            ctx.fillStyle = "#22c55e";
+            for (let segment of snake) {
+                ctx.fillRect(segment.x * gridSize + 1, segment.y * gridSize + 1, gridSize - 2, gridSize - 2);
+            }
+        }
+
+        function resetGame() {
+            score = 0;
+            document.getElementById("score").innerText = score;
+            snake = [{ x: 10, y: 10 }];
+            dx = 1;
+            dy = 0;
+            initApples();
+        }
+
+        initApples();
+        setInterval(gameLoop, 120);
+    </script>
 </body>
 </html>
